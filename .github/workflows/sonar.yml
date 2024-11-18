@@ -22,9 +22,9 @@ jobs:
         
       - name: Docker Build and push
         run: |
-          docker build -t HOI-UI .
-          docker tag HOI-UI bhimanivasu/HOI-UI:latest
+          docker build -t hoi-ui .
+          docker tag hoi-ui bhimanivasu/hoi-ui:latest
           docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
-          docker push bhimanivasu/HOI-UI:latest
+          docker push bhimanivasu/hoi-ui:latest
         env:
           DOCKER_CLI_ACI: 1
