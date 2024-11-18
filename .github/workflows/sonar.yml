@@ -19,3 +19,12 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       - name: trivy file scan
         run: trivy fs . > trivyfs.txt 
+        
+      - name: Docker Build and push
+        run: |
+          docker build -t HOI-UI .
+          docker tag HOI-UI bhimanivasu/HOI-UI:latest
+          docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
+          docker push bhimanivasu/HOI-UI:latest
+        env:
+          DOCKER_CLI_ACI: 1
