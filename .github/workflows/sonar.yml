@@ -28,3 +28,6 @@ jobs:
           docker push bhimanivasu/hoi-ui:latest
         env:
           DOCKER_CLI_ACI: 1
+
+      - name: Trivy image scan
+        run: trivy image bhimanivasu/hoi-ui:latest > trivyimage.txt
