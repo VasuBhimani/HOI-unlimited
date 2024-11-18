@@ -6,7 +6,7 @@ on:
 jobs:
   build-analyze-scan:
     name: Build
-    runs-on: [Githubactions-Eks]
+    runs-on: [Githubactions-Eks] # write label name only. use self-hosted if nothing works 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
