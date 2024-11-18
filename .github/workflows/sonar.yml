@@ -31,3 +31,16 @@ jobs:
 
       - name: Trivy image scan
         run: trivy image bhimanivasu/hoi-ui:latest > trivyimage.txt
+
+  deploy:
+    needs: build-analyze-scan
+    runson : [self-hosted]
+    steps:
+      - name: docker pull image
+        run: docker pull bhimanivasu/hoi-ui:latest
+
+      - name: Image scan
+        run: trivy image bhimanivasu/hoi-ui:latest > trivyimagedeploy.txt  
+  
+      - name: Deploy to container
+        run: docker run -d --name game -p 3000:3000 bhimanivasu/hoi-ui:latest
