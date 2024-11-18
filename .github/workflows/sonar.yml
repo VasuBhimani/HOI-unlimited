@@ -34,7 +34,7 @@ jobs:
 
   deploy:
     needs: build-analyze-scan
-    runson : [self-hosted]
+    runs-on : [self-hosted]
     steps:
       - name: docker pull image
         run: docker pull bhimanivasu/hoi-ui:latest
