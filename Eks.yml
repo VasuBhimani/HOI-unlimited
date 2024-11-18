@@ -1,46 +1,62 @@
-name: Build,Analyze,scan
-on:
-  push:
-    branches:
+name Build,Analyze,scan
+on
+  push
+    branches
       - master
-jobs:
-  build-analyze-scan:
-    name: Build
-    runs-on: [self-hosted] # write label name only. use self-hosted if nothing works
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
-      - name: Build and analyze with SonarQube
-        uses: sonarsource/sonarqube-scan-action@master
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      - name: trivy file scan
-        run: trivy fs . > trivyfs.txt
-
-      - name: Docker Build and push
-        run: |
+jobs
+  build-analyze-scan
+    name Build
+    runs-on [self-hosted] # write label name only. use self-hosted if nothing works 
+    steps
+      - name Checkout code
+        uses actionscheckout@v2
+        with
+          fetch-depth 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name Build and analyze with SonarQube
+        uses sonarsourcesonarqube-scan-action@master
+        env
+          SONAR_TOKEN ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL ${{ secrets.SONAR_HOST_URL }}
+      - name trivy file scan
+        run trivy fs .  trivyfs.txt 
+        
+      - name Docker Build and push
+        run 
           docker build -t hoi-ui .
-          docker tag hoi-ui bhimanivasu/hoi-ui:latest
+          docker tag hoi-ui bhimanivasuhoi-uilatest
           docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
-          docker push bhimanivasu/hoi-ui:latest
-        env:
-          DOCKER_CLI_ACI: 1
+          docker push bhimanivasuhoi-uilatest
+        env
+          DOCKER_CLI_ACI 1
 
-      - name: Trivy image scan
-        run: trivy image bhimanivasu/hoi-ui:latest > trivyimage.txt
+      - name Trivy image scan
+        run trivy image bhimanivasuhoi-uilatest  trivyimage.txt
 
-  deploy:
-    needs: build-analyze-scan
-    runs-on: [self-hosted]
-    steps:
-      - name: docker pull image
-        run: docker pull bhimanivasu/hoi-ui:latest
+  deploy
+    needs build-analyze-scan
+    runs-on  [self-hosted]
+    steps
+      - name docker pull image
+        run docker pull bhimanivasuhoi-uilatest
 
-      - name: Image scan
-        run: trivy image bhimanivasu/hoi-ui:latest > trivyimagedeploy.txt
+      - name Image scan
+        run trivy image bhimanivasuhoi-uilatest  trivyimagedeploy.txt  
+  
+      - name Deploy to container
+        run docker run -d --name hoiui -p 30003000 bhimanivasuhoi-uilatest
 
-      - name: Deploy to container
-        run: docker run -d --name ui -p 3000:3000 bhimanivasu/hoi-ui:latest
+      - name Update kubeconfig
+        run aws eks --region ap-south-1 update-kubeconfig --name EKS_CLOUD
+
+      - name Deploy to kubernetes
+        run kubectl apply -f deployment-service.yml #deployment file name
+        
+      - name Send a Slack Notification
+        if always()
+        uses act10nsslack@v1
+        with
+          status ${{ job.status }}
+          steps ${{ toJson(steps) }}
+          channel '#githubaction-eks' #add slack channel name 
+        env
+          SLACK_WEBHOOK_URL ${{ secrets.SLACK_WEBHOOK_URL }}
