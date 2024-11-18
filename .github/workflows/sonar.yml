@@ -43,4 +43,4 @@ jobs:
         run: trivy image bhimanivasu/hoi-ui:latest > trivyimagedeploy.txt  
   
       - name: Deploy to container
-        run: docker run -d --name ui -p 3000:3000 bhimanivasu/hoi-ui:latest
+        run: docker run -d --name hoiui -p 3000:3000 bhimanivasu/hoi-ui:latest
