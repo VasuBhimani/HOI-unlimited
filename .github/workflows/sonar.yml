@@ -6,7 +6,7 @@ on:
 jobs:
   build-analyze-scan:
     name: Build
-    runs-on: [Githubactions-Eks] # write label name only. use self-hosted if nothing works 
+    runs-on: [self-hosted] # write label name only. use self-hosted if nothing works 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -17,3 +17,5 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      - name: install npm dependency
+        run : npm install
