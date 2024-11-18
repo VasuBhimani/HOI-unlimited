@@ -14,12 +14,8 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # Copy the rest of the application code
 COPY . /app
 
-# Make port 5000 available to the world outside this container
-EXPOSE 5000
-
-# Define environment variable
-ENV FLASK_APP=app.py
-ENV FLASK_RUN_HOST=0.0.0.0
+# Make port 3000 available to the world outside this container
+EXPOSE 3000
 
 # Run the command to start the Flask app
-CMD ["python", "-m", "flask", "run"]
+CMD ["python", "-m", "flask", "run", "--host=0.0.0.0", "--port=3000"]
