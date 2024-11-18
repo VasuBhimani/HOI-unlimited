@@ -17,3 +17,5 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      - name: trivy file scan
+        run: trivy fs . > trivyfs.txt 
