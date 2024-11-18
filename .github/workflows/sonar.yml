@@ -57,6 +57,6 @@ jobs:
         with:
           status: ${{ job.status }}
           steps: ${{ toJson(steps) }}
-          channel: '#githubaction-eks' #add slack channel name 
+          channel: '#githubaction-eks' #add slack channel name
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
