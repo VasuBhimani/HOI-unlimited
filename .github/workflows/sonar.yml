@@ -12,44 +12,17 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-      - name: Build and analyze with SonarQube
-        uses: sonarsource/sonarqube-scan-action@master
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      - name: trivy file scan
-        run: trivy fs . > trivyfs.txt 
-        
-      - name: Docker Build and push
-        run: |
-          docker build -t hoi-ui .
-          docker tag hoi-ui bhimanivasu/hoi-ui:latest
-          docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
-          docker push bhimanivasu/hoi-ui:latest
-        env:
-          DOCKER_CLI_ACI: 1
-
-      - name: Trivy image scan
-        run: trivy image bhimanivasu/hoi-ui:latest > trivyimage.txt
-
-  deploy:
-    needs: build-analyze-scan
-    runs-on : [self-hosted]
-    steps:
-      - name: docker pull image
-        run: docker pull bhimanivasu/hoi-ui:latest
-
-      - name: Image scan
-        run: trivy image bhimanivasu/hoi-ui:latest > trivyimagedeploy.txt  
   
       - name: Deploy to container
-        run: docker run -d --name hoiui -p 3000:3000 bhimanivasu/hoi-ui:latest
-
+        run: |
+           docker stop hoiui
+           docker rm hoiui
+             
       - name: Update kubeconfig
         run: aws eks --region ap-south-1 update-kubeconfig --name EKS_CLOUD
 
       - name: Deploy to kubernetes
-        run: kubectl apply -f deployment-service.yml #deployment file name
+        run: kubectl delete -f deployment-service.yml #deployment file name
         
       - name: Send a Slack Notification
         if: always()
